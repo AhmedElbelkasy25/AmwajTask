@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="AmwajTask/AmwajTask.csproj" />
+  <Project Path="DataAccess/DataAccess.csproj" Id="8b26f08f-3712-4ef8-a232-4b5c5ce54108" />
+  <Project Path="Models/Models.csproj" Id="13529644-dee8-4d6e-bdac-dfb4cc0f1ee9" />
+  <Project Path="Service/Service.csproj" Id="745268c5-7def-4e51-9c28-9943a21b9e48" />
 </Solution>

@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Service;
+using Service.IServices;
+
 namespace AmwajTask
 {
     public class Program
@@ -7,7 +11,27 @@ namespace AmwajTask
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+                 .AddCookieTempDataProvider();
+
+            //add db context
+
+            builder.Services.AddDbContext<ApplicationDbContext>(option =>
+            {
+                option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+
+
+
+            // add Services
+            builder.Services.AddScoped<IRepository<Employee>, Repository<Employee>>();
+            builder.Services.AddScoped<IRepository<Qualification>, Repository<Qualification>>();
+            builder.Services.AddScoped<IRepository<Vacation>, Repository<Vacation>>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork > ();
+            builder.Services.AddScoped<IEmployeeService, EmployeeService> ();
+
+            builder.Services.AddSession();
 
             var app = builder.Build();
 
@@ -19,9 +43,10 @@ namespace AmwajTask
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
 
+            app.UseHttpsRedirection();
+            app.UseSession();
+            app.UseRouting();
             app.UseAuthorization();
 
             app.MapStaticAssets();
