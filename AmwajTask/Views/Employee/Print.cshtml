@@ -3,10 +3,9 @@
     Layout = null;
 }
 
+<title> بيانات الموظف - @Model.Employee?.Name</title>
 <div class="container" dir="rtl">
 
- 
-        <title>بيانات الموظف - @Model.Employee.Name</title>
         <style>
                    
 
@@ -56,23 +55,23 @@
 
         <div class="row">
             <span class="label">الرقم:</span>
-            <span>@Model.Employee.Id</span>
+            <span>@Model.Employee?.Id</span>
         </div>
         <div class="row">
             <span class="label">الاسم:</span>
-            <span>@Model.Employee.Name</span>
+            <span>@Model.Employee?.Name</span>
         </div>
         <div class="row">
             <span class="label">تاريخ الميلاد:</span>
-            <span>@Model.Employee.BirthDate.ToString("yyyy/MM/dd")</span>
+            <span>@Model.Employee?.BirthDate.ToString("yyyy/MM/dd")</span>
         </div>
         <div class="row">
             <span class="label">المؤهل:</span>
-            <span>@Model.Employee.Qualification?.Title</span>
+            <span>@Model.Employee?.Qualification?.Title</span>
         </div>
         <div class="row">
             <span class="label">إجمالي الإجازات:</span>
-            <span>@Model.Employee.TotalVacationDays يوم</span>
+            <span>@Model.Employee?.TotalVacationDays يوم</span>
         </div>
 
         <h4 style="margin-top: 30px;">الإجازات</h4>
