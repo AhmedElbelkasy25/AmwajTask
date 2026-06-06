@@ -17,7 +17,7 @@ namespace Models
     public class Vacation
     {
         public int Id { get; set; }
-        public string EmployeeId { get; set; } = null!;
+        public int EmployeeId { get; set; }
         public Employee Employee { get; set; } = null!;
 
         [Required]
@@ -25,13 +25,13 @@ namespace Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime StartDate { get; set; }
+        public DateOnly StartDate { get; set; }
 
         [Required]
         [Range(1, 30, ErrorMessage = "المدة يجب أن تكون بين 1 و 30 يوم")]
         public int Duration { get; set; }
 
-        public DateTime EndDate => StartDate.AddDays(Duration - 1);
+        public DateOnly EndDate => StartDate.AddDays(Duration - 1);
         
     }
 }

@@ -12,7 +12,7 @@ namespace DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Qualification",
+                name: "Qualifications",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,16 +21,16 @@ namespace DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Qualification", x => x.Id);
+                    table.PrimaryKey("PK_Qualifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Employees",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     QualificationId = table.Column<int>(type: "int", nullable: false),
                     TotalVacationDays = table.Column<int>(type: "int", nullable: false)
                 },
@@ -38,9 +38,9 @@ namespace DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Employees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Employees_Qualification_QualificationId",
+                        name: "FK_Employees_Qualifications_QualificationId",
                         column: x => x.QualificationId,
-                        principalTable: "Qualification",
+                        principalTable: "Qualifications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -51,9 +51,9 @@ namespace DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     Duration = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -100,7 +100,7 @@ namespace DataAccess.Migrations
                 name: "Employees");
 
             migrationBuilder.DropTable(
-                name: "Qualification");
+                name: "Qualifications");
         }
     }
 }

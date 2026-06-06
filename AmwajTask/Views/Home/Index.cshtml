@@ -10,7 +10,7 @@
             <h4 class="mb-0">بيانات الموظف</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" asp-controller="Employee" method="post">
                 <div class="row g-3 align-items-end">
                     <div class="text-danger" asp-validation-summary="ModelOnly"></div>
                     <div class="col-md-2">
@@ -27,7 +27,7 @@
 
                     <div class="col-md-2">
                         <label asp-for="NewEmployee.BirthDate" class="form-label fw-bold">تاريخ الميلاد</label>
-                        <input asp-for="NewEmployee.BirthDate" value="@DateTime.Now" class="form-control" />
+                        <input asp-for="NewEmployee.BirthDate" type="date" value="1990-01-01" class="form-control" />
                         <span asp-validation-for="NewEmployee.BirthDate" class="text-danger"></span>
                     </div>
 
@@ -41,7 +41,7 @@
 
                     <div class="col-md-3 text-center">
                         <button type="submit" class="btn btn-success px-4">حفظ</button>
-                        <button type="reset" class="btn btn-warning px-4">تعديل</button>
+                        
                     </div>
 
                 </div>
@@ -77,14 +77,18 @@
                                 <button class="btn btn-info btn-sm" onclick="openVacationModal('@Model.Empolyees[i].Id')">عرض</button>
                             </td>
                             <td>
-                                <form asp-action="Delete" method="post" style="display:inline;">
+                                <form asp-action="Delete" asp-controller="Employee" method="post" style="display:inline;">
                                     <input type="hidden" name="id" value="@Model.Empolyees[i].Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('متأكد؟')">حذف</button>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmDelete(event)">حذف</button>
                                 </form>
+                                <button type="button" class="btn btn-warning btn-sm" onclick="openEditModal('@Model.Empolyees[i].Id',
+                                    '@Model.Empolyees[i].Name', '@Model.Empolyees[i].BirthDate.ToString("yyyy-MM-dd")', '@Model.Empolyees[i].QualificationId')">
+                                    تعديل
+                                </button>
                             </td>
                             <td><span class="badge bg-primary fs-6">@Model.Empolyees[i].TotalVacationDays</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="printEmployee('@Model.Empolyees[i].Id')">عرض</button>
+                                <a target="_blank" class="btn btn-primary btn-sm" asp-action="Print" asp-controller="Employee" asp-route-id="@Model.Empolyees[i].Id">عرض</a>
                             </td>
                         </tr>
                     }
@@ -94,11 +98,49 @@
     </div>
 
     <div class="d-flex justify-content-center mt-3 gap-2">
-        <button class="btn btn-outline-primary" @(Model.CurrentPage == 1 ? "disabled" : "") onclick="location.href='?page=@(Model.CurrentPage - 1)'">السابق</button>
+        <a class="btn btn-outline-primary  @(Model.CurrentPage == 1 ? "disabled" : "")" href="/home?page=@(Model.CurrentPage - 1)">السابق</a>
         <span class="align-self-center fw-bold">صفحة @Model.CurrentPage من @Model.TotalPages</span>
-        <button class="btn btn-outline-primary" @(Model.CurrentPage == Model.TotalPages ? "disabled" : "") onclick="location.href='?page=@(Model.CurrentPage + 1)'">التالي</button>
+        <a class="btn btn-outline-primary @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")" href="/home?page=@(Model.CurrentPage + 1)">التالي</a>
     </div>
 
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">تعديل بيانات الموظف</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="Edit" asp-controller="Employee" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="editId" />
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" name="Name" id="editName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ الميلاد</label>
+                        <input type="date" name="BirthDate" id="editBirthDate" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">المؤهل</label>
+                        <select name="QualificationId" id="editQualification" class="form-select" required>
+                            <option value="">-- اختر --</option>
+                            @foreach (var q in Model.Qualifications)
+                            {
+                                <option value="@q.Id">@q.Title</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-warning">حفظ التعديل</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="vacationModal" tabindex="-1">
@@ -135,7 +177,7 @@
                     </div>
                 </form>
                 <hr />
-                <table class="table table-sm text-center">
+                <table dir="rtl" class="table table-sm text-center">
                     <thead class="table-light">
                         <tr>
                             <th>النوع</th>
@@ -150,88 +192,134 @@
         </div>
     </div>
 </div>
-@section Scripts{
+
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 }
 <script>
     function openVacationModal(empId) {
-        document.getElementById('vacEmpId').value = empId;
-        loadVacations(empId);
-        new bootstrap.Modal(document.getElementById('vacationModal')).show();
+    document.getElementById('vacEmpId').value = empId;
+    loadVacations(empId);
+    new bootstrap.Modal(document.getElementById('vacationModal')).show();
     }
 
     async function loadVacations(empId) {
-        const res = await fetch(`/Employees/GetVacations?empId=${empId}`);
+        const res = await fetch(`/Vacation/GetVacations?empId=${empId}`);
         const data = await res.json();
         document.getElementById('vacationList').innerHTML = data.map(v => `
-            <tr>
-                <td>${v.type}</td>
-                <td>${v.startDate}</td>
-                <td>${v.duration}</td>
-                <td><button class="btn btn-danger btn-sm" onclick="deleteVacation(${v.id})">حذف</button></td>
-            </tr>
+        <tr>
+        <td>${v.type}</td>
+        <td>${v.startDate}</td>
+        <td>${v.duration}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="confirmDeleteVacation(${v.id})">حذف</button></td>
+        </tr>
         `).join('');
     }
 
-       async function saveVacation() {
+    async function saveVacation() {
         const empId = document.getElementById('vacEmpId').value;
 
-        
         const body = {
-            EmployeeId: empId,      
-            Type: document.getElementById('vacType').value,           
-            StartDate: document.getElementById('vacStart').value,  
-            Duration: parseInt(document.getElementById('vacDuration').value)  
+            EmployeeId: empId,
+            Type: document.getElementById('vacType').value,
+            StartDate: document.getElementById('vacStart').value,
+            Duration: parseInt(document.getElementById('vacDuration').value)
         };
 
-         
-
         try {
-            const response = await fetch('/Home/AddVacation', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(body)
+            const response = await fetch('/Vacation/AddVacation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("Server error:", text);
+            Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'خطأ: ' + response.status,
+            confirmButtonText: 'حسنا'
             });
+            return;
+        }
 
-           
+        const result = await response.json();
 
-            if (!response.ok) {
-                const text = await response.text();
-                console.error("Server error:", text);
-                alert("خطأ: " + response.status);
-                return;
-            }
-
-            const result = await response.json();
-            
-
-            if (result.success) {
-                loadVacations(empId);
-             
-                document.getElementById('vacType').value = '';
-                document.getElementById('vacStart').value = '';
-                document.getElementById('vacDuration').value = '';
-            } else {
-                alert(result.message || "خطأ غير معروف");
-            }
+        if (result.success) {
+            loadVacations(empId);
+            document.getElementById('vacType').value = '';
+            document.getElementById('vacStart').value = '';
+            document.getElementById('vacDuration').value = '';
+        } else {
+            Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: result.message || 'خطأ غير معروف',
+            confirmButtonText: 'حسنا'
+            });
+        }
 
         } catch (err) {
-            console.error("Fetch error:", err);
-            alert("خطأ في الاتصال!");
+        console.error("Fetch error:", err);
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ في الاتصال',
+            text: 'حدث خطأ أثناء الاتصال بالسيرفر',
+            confirmButtonText: 'حسنا'
+            });
         }
     }
 
-    async function deleteVacation(id) {
-        if (!confirm('متأكد؟')) return;
-        await fetch(`/Home/DeleteVacation?id=${id}`, { method: 'POST' });
-        loadVacations(document.getElementById('vacEmpId').value);
-        location.reload();
+    async function confirmDeleteVacation(id) {
+        const result = await Swal.fire({
+            title: 'هل أنت متأكد؟',
+            text: 'هل تريد حذف هذه الإجازة؟',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'نعم، احذف',
+            cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+            await fetch(`/Vacation/DeleteVacation?id=${id}`, { method: 'POST' });
+            loadVacations(document.getElementById('vacEmpId').value);
+            // location.reload();
+        }
     }
 
-    function printEmployee(id) {
-        window.open(`/Home/Print?id=${id}`, '_blank');
+    async function confirmDelete(event) {
+        event.preventDefault();
+        const form = event.target.closest('form');
+
+    const result = await Swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: 'هل تريد حذف هذا الموظف وإجازاته؟',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'إلغاء'
+        });
+
+        if (result.isConfirmed) {
+        form.submit();
+        }
+    }
+
+    function openEditModal(id, name, birthDate, qualificationId) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editBirthDate').value = birthDate;
+        document.getElementById('editQualification').value = qualificationId;
+        new bootstrap.Modal(document.getElementById('editModal')).show();
     }
 </script>

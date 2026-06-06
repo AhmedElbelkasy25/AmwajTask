@@ -1,3 +1,4 @@
+using DataAccess.DbIntializer;
 using Microsoft.EntityFrameworkCore;
 using Service;
 using Service.IServices;
@@ -30,6 +31,8 @@ namespace AmwajTask
             builder.Services.AddScoped<IRepository<Vacation>, Repository<Vacation>>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork > ();
             builder.Services.AddScoped<IEmployeeService, EmployeeService> ();
+            builder.Services.AddScoped<IDbIntializer, DbIntializer>();
+            builder.Services.AddScoped<IVacationService, VacationService>();
 
             builder.Services.AddSession();
 
@@ -54,6 +57,14 @@ namespace AmwajTask
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
+            // Db Intializer
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbIntializer>();
+                dbInitializer.Initialize();
+            }
 
             app.Run();
         }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260604003757_intial")]
+    [Migration("20260605182501_intial")]
     partial class intial
     {
         /// <inheritdoc />
@@ -27,11 +27,14 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Models.Employee", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("BirthDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -70,7 +73,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Qualification");
+                    b.ToTable("Qualifications");
                 });
 
             modelBuilder.Entity("Models.Vacation", b =>
@@ -84,12 +87,11 @@ namespace DataAccess.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmployeeId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Type")
                         .IsRequired()

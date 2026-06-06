@@ -12,7 +12,7 @@ namespace Models
 
         [Required(ErrorMessage = "الرقم مطلوب")]
         [Display(Name = "الرقم")]
-        public string Id { get; set; } = null!;
+        public int Id { get; set; } 
 
         [Required(ErrorMessage = "الاسم مطلوب")]
         [Display(Name = "الاسم")]
@@ -21,7 +21,7 @@ namespace Models
         [Required(ErrorMessage = "تاريخ الميلاد مطلوب")]
         
         [Display(Name = "تاريخ الميلاد")]
-        public DateTime BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
 
         [Required(ErrorMessage = "المؤهل مطلوب")]
         [Display(Name = "المؤهل")]

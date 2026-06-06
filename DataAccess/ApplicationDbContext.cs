@@ -13,7 +13,7 @@ namespace DataAccess
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Vacation> Vacations { get; set; }
-        public DbSet<Qualification> Qualification { get; set; }
+        public DbSet<Qualification> Qualifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

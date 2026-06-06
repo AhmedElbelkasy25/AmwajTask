@@ -1,0 +1,114 @@
+﻿@model PrintVM
+@{
+    Layout = null;
+}
+
+<div class="container" dir="rtl">
+
+ 
+        <title>بيانات الموظف - @Model.Employee.Name</title>
+        <style>
+                   
+
+                    .row {
+                        margin-bottom: 15px;
+                    }
+
+                    .label {
+                        font-weight: bold;
+                        display: inline-block;
+                        width: 150px;
+                    }
+
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 20px;
+                    }
+
+                    th, td {
+                        border: 1px solid #333;
+                        padding: 10px;
+                        text-align: center;
+                    }
+
+                    th {
+                        background: #f0f0f0;
+                    }
+
+                    .no-print {
+                        margin-top: 30px;
+                        text-align: center;
+                    }
+
+                    @@media print {
+                        .no-print {
+                            display: none;
+                        }
+                    }
+        </style>
+
+
+        <div class="header">
+            <h2>بيانات الموظف</h2>
+            <p>تاريخ الطباعة: @DateTime.Now.ToString("yyyy/MM/dd")</p>
+        </div>
+
+        <div class="row">
+            <span class="label">الرقم:</span>
+            <span>@Model.Employee.Id</span>
+        </div>
+        <div class="row">
+            <span class="label">الاسم:</span>
+            <span>@Model.Employee.Name</span>
+        </div>
+        <div class="row">
+            <span class="label">تاريخ الميلاد:</span>
+            <span>@Model.Employee.BirthDate.ToString("yyyy/MM/dd")</span>
+        </div>
+        <div class="row">
+            <span class="label">المؤهل:</span>
+            <span>@Model.Employee.Qualification?.Title</span>
+        </div>
+        <div class="row">
+            <span class="label">إجمالي الإجازات:</span>
+            <span>@Model.Employee.TotalVacationDays يوم</span>
+        </div>
+
+        <h4 style="margin-top: 30px;">الإجازات</h4>
+
+        @if (Model.Vacations.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>النوع</th>
+                        <th>تاريخ البداية</th>
+                        <th>المدة</th>
+                        <th>تاريخ النهاية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model.Vacations)
+                    {
+                        <tr>
+                            <td>@v.Type</td>
+                            <td>@v.StartDate.ToString("yyyy/MM/dd")</td>
+                            <td>@v.Duration</td>
+                            <td>@v.StartDate.AddDays(v.Duration - 1).ToString("yyyy/MM/dd")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>لا توجد إجازات مسجلة</p>
+        }
+
+        <div class="no-print">
+            <button onclick="window.print()">طباعة</button>
+            <button onclick="window.close()">إغلاق</button>
+        </div>
+
+</div>
